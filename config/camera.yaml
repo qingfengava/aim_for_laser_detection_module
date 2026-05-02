@@ -1,0 +1,44 @@
+# Deployment baseline: hik camera, high fps + low exposure.
+type: hik_camera
+camera_info_path: ${VISION_ROOT}/config/camera_info.yaml
+
+hik_camera:
+  target_sn: ""
+  adc_bit_depth: Bits_8
+  pixel_format: BayerRG8
+  reverse_x: false
+  reverse_y: false
+  width: 1440
+  height: 1080
+  offset_x: 0
+  offset_y: 0
+  acquisition_frame_rate_enable: true
+  acquisition_frame_rate: 100
+  exposure_time: 3000
+  gain: 8
+  gamma: 0.7
+  trigger_type: none
+  trigger_source: ""
+  trigger_activation: 0
+  use_raw: false
+  use_rgb: false
+  use_ea: false
+  use_cuda_cvt: true
+
+video_player:
+  fps: 60
+  loop: true
+  use_cvt: true
+  trigger_mode: false
+  path: ./sample.mp4
+  start_frame: 0
+
+uvc:
+  device_name: /dev/video0
+  fps: 60
+  width: 1280
+  height: 720
+  exposure: 100.0
+  gain: 10.0
+  gamma: 100
+  trigger_mode: false

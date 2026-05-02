@@ -1,0 +1,41 @@
+pipeline:
+  lock_confirm_frames: 6
+  enemy_color_score_min: 0.10
+  enemy_prob_min: 0.55
+
+  laser_prob_min: 0.60
+  laser_reproj_error_max: 3.50
+  armor_laser_error_margin: 0.50
+  gate_center_window_px: 45.0
+
+  stage2_scale: 0.60
+  stage3_scale: 0.20
+
+  fusion_iou_min: 0.15
+  fusion_w_model: 0.45
+  fusion_w_geom: 0.35
+  fusion_w_temporal: 0.20
+  enable_undistort: true
+  undistort_alpha: 0.0
+  undistort_border_px: 6
+
+  use_classic_only: true
+
+  stage3_color_weight: 0.35
+  low_conf_recap_frames: 6
+  recover_frames: 8
+  control_latency_ms: 29.0
+
+  pid_yaw_kp: 1.5
+  pid_yaw_ki: 0.0
+  pid_yaw_kd: 0.05
+  pid_pitch_kp: 1.5
+  pid_pitch_ki: 0.0
+  pid_pitch_kd: 0.05
+  pid_output_limit: 0.8
+
+  color_min_s: 80.0
+  color_min_v: 80.0
+  
+  ekf_min_confirm_frames: 3
+  ekf_max_speed_mps: 12.0

@@ -1,0 +1,4 @@
+model:
+  enable_yolo: true
+  yolo_backend: onnxruntime
+  yolo_model_path: model/yolo11_laser_pose.onnx
