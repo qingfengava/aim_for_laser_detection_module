@@ -7,6 +7,7 @@
 #include <wust_vl/algorithm/control/pid.hpp>
 #include <wust_vl/algorithm/pnp_solver.hpp>
 
+#include <deque>
 #include <optional>
 
 namespace laser_aim::modules::perception {
@@ -20,9 +21,9 @@ public:
     AimOutput process(const FrameContext& frame, PipelineDebugFrame* dbg_out);
 
 private:
-    std::vector<Candidate> runDualCandidateGeneration(const cv::Mat& src_img);
+    std::vector<Candidate> runDualCandidateGeneration(const cv::Mat& src_img, TeamColor enemy_color);
     std::vector<Candidate> runYoloCandidateGeneration(const cv::Mat& src_img) const;
-    std::vector<Candidate> runClassicCandidateGeneration(const cv::Mat& src_img);
+    std::vector<Candidate> runClassicCandidateGeneration(const cv::Mat& src_img, TeamColor enemy_color);
     std::vector<Candidate> fuseCandidates(
         const std::vector<Candidate>& yolo_candidates,
         const std::vector<Candidate>& classic_candidates
@@ -38,8 +39,10 @@ private:
         bool strict_unknown
     ) const;
     void classifyLaserModule(std::vector<Candidate>& candidates);
-    void refineAndSolvePose(const cv::Mat& gray_img, std::vector<Candidate>& candidates);
+    void refineCandidatesKeypoints(const cv::Mat& gray_img, std::vector<Candidate>& candidates) const;
+    void solveCandidateAimCenters(std::vector<Candidate>& candidates);
     void refineKeypointsSubpix(const cv::Mat& gray_img, Candidate* candidate) const;
+    void smoothSelectedColor(std::optional<Candidate>* selected, const TeamPolicy& policy);
     std::optional<Candidate> selectBest(const std::vector<Candidate>& candidates) const;
     std::optional<Candidate> selectBackup(
         const std::vector<Candidate>& candidates,
@@ -66,7 +69,7 @@ private:
         const cv::Point2f& predicted_aim_px
     ) const;
 
-    cv::Point2f solveAimCenter(const Candidate& c);
+    std::optional<cv::Point2f> solveAimCenter(const Candidate& c);
     cv::Point2f predictAimCenterPx(
         const TrackState& track,
         const std::optional<Candidate>& selected
@@ -76,6 +79,7 @@ private:
         const cv::Size& img_size,
         std::chrono::steady_clock::time_point now_ts
     );
+    PnpCalibMetrics updatePnpCalibMetrics(const std::vector<Candidate>& candidates);
     double candidateScore(const Candidate& c, LockStage stage) const;
 
     static double currentStageScale(LockStage stage, const config::PipelineConfig& cfg);
@@ -108,8 +112,27 @@ private:
     int recover_frames_ { 0 };
     bool recapture_mode_ { false };
     std::optional<Candidate> backup_candidate_;
+    int backup_candidate_age_frames_ { 0 };
+    int backup_switch_cooldown_left_ { 0 };
     std::optional<cv::Point2f> last_selected_center_;
     std::chrono::steady_clock::time_point last_ctrl_ts_ {};
+    double last_yaw_cmd_ { 0.0 };
+    double last_pitch_cmd_ { 0.0 };
+    struct PnpCalibAccumulator {
+        std::uint64_t total_valid_samples { 0 };
+        std::uint64_t total_pred_laser { 0 };
+        std::uint64_t total_pred_armor { 0 };
+        std::uint64_t total_pred_unknown { 0 };
+        std::uint64_t total_ambiguous { 0 };
+        std::uint64_t total_expected_laser_samples { 0 };
+        std::uint64_t total_laser_as_armor { 0 };
+    };
+    PnpCalibAccumulator pnp_calib_acc_;
+    int pnp_calib_expected_class_last_ { -999 };
+    std::deque<double> color_score_window_;
+    std::deque<int> color_valid_window_;
+    TeamColor color_smooth_enemy_ref_ { TeamColor::UNKNOWN };
+    TeamColor color_stable_decision_ { TeamColor::UNKNOWN };
 };
 
 void drawPipelineDebug(cv::Mat& debug_img, const PipelineDebugFrame& dbg);

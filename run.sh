@@ -10,9 +10,20 @@ DEBUG_ARG="${2:-0}"
 
 export VISION_ROOT="$WORK_DIR"
 
-if [[ "$ACTION" != "build" && "$ACTION" != "rebuild" && "$ACTION" != "run" ]]; then
-  echo "Usage: $0 {build|rebuild|run [debug(0/1)]}"
+if [[ "$ACTION" != "build" && "$ACTION" != "rebuild" && "$ACTION" != "run" \
+   && "$ACTION" != "benchmark" ]]; then
+  echo "Usage: $0 {build|rebuild|run [debug(0/1)]|benchmark [check|update-baseline]}"
   exit 1
+fi
+
+if [[ "$ACTION" == "benchmark" ]]; then
+  MODE="${2:-check}"
+  "$WORK_DIR/tools/benchmark/run_regression.sh" \
+    "$WORK_DIR/config/benchmark/classic_acceptance_manifest.json" \
+    "$WORK_DIR/config/benchmark/classic_baseline.json" \
+    "/tmp/classic_regression_report.json" \
+    "$MODE"
+  exit $?
 fi
 
 if [[ "$ACTION" == "rebuild" ]]; then

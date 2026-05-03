@@ -9,7 +9,7 @@
   - `wust_vl::common::utils::{ParamGroup, Parameter, ParameterManager}`
   - `wust_vl` 日志与并发线程池
 - 复用项目内 `KalmanHyLib` 做运动状态估计
-- 沿用 `wust_vision` 的配置热更新与 debug 输出风格（`/debug_frame`, `/dev/shm/cmd_log.json`）
+- 沿用 `wust_vision` 的配置热更新与 debug 输出风格（`/debug_frame`, `/dev/shm/cmd_log.json`, `/dev/shm/cmd_log.jsonl`）
 
 ## 目录
 - `include/laser_aim/common`: 核心数据结构
@@ -40,6 +40,30 @@
 ./run.sh run 1
 ```
 - `run 1` 表示开启 debug 模式（输出共享内存调试图 + `/dev/shm/cmd_log.json`）
+
+## 调试日志
+- `/dev/shm/cmd_log.json`：当前帧快照（统一字段，含 `output/gate/pnp/perf/stats/candidates`）
+- `/dev/shm/cmd_log.jsonl`：逐帧回放日志（每帧一行 JSON），用于离线复盘与回归
+- 关键统计内置在 `stats`：
+  - `hit_window_both_ok_frames/hit_window_rate`
+  - `pnp_error_mean/pnp_error_max`
+  - `gate_fail_reason_counts`
+  - `loss_avg_frames/relock_avg_frames`
+
+## 传统方案验收回归
+1. 采集五类场景日志并放入 `data/benchmark/*/cmd_log.jsonl`
+2. 运行回归：
+```bash
+./tools/benchmark/run_regression.sh
+```
+3. 首次建立基线：
+```bash
+./tools/benchmark/run_regression.sh \
+  config/benchmark/classic_acceptance_manifest.json \
+  config/benchmark/classic_baseline.json \
+  /tmp/classic_regression_report.json \
+  update-baseline
+```
 
 ## 工程状态
 这是“工业级骨架”版本：

@@ -6,6 +6,13 @@ pipeline:
   laser_prob_min: 0.60
   laser_reproj_error_max: 3.50
   armor_laser_error_margin: 0.50
+  pnp_cls_laser_reproj_max: 4.50
+  pnp_cls_armor_reproj_max: 4.50
+  pnp_cls_margin_abs: 0.50
+  pnp_cls_margin_ratio: 0.10
+  pnp_cls_ambiguous_band: 0.20
+  pnp_cls_ambiguous_to_unknown: true
+  pnp_calib_expected_class: -1
   gate_center_window_px: 45.0
 
   stage2_scale: 0.60
@@ -15,6 +22,41 @@ pipeline:
   fusion_w_model: 0.45
   fusion_w_geom: 0.35
   fusion_w_temporal: 0.20
+
+  classic_bin_threshold: 210
+  classic_use_color_diff: true
+  classic_color_diff_threshold: 45.0
+  classic_brightness_threshold: 120.0
+  classic_unknown_use_color_diff: false
+  classic_morph_open_kernel: 3
+  classic_contour_area_min: 12.0
+  classic_min_rect_side: 2.0
+  classic_bar_long_side_min: 6.0
+  classic_bar_short_side_min: 1.5
+  classic_bar_ratio_min: 1.6
+  classic_bar_ratio_max: 20.0
+  classic_pair_top_bottom_gap_min: 1.0
+  classic_pair_top_bottom_gap_ratio_min: 0.5
+  classic_pair_top_bottom_gap_ratio_max: 8.0
+  classic_pair_left_right_misaligned_ratio_max: 1.0
+  classic_pair_left_right_gap_min: 1.0
+  classic_pair_left_right_gap_ratio_min: 0.5
+  classic_pair_left_right_gap_ratio_max: 8.0
+  classic_pair_top_bottom_misaligned_ratio_max: 1.0
+  classic_pair_len_ratio_max: 1.8
+  classic_pair_angle_diff_max_deg: 20.0
+  classic_conf_area_norm: 1500.0
+  classic_conf_fallback_area_norm: 800.0
+  classic_geom_score_min: 0.55
+  classic_geom_low_quality_penalty: 0.35
+  classic_geom_score_weight: 0.80
+  classic_enable_single_bar_fallback: false
+  direction_enable: true
+  direction_laser_ratio_min: 1.10
+  direction_armor_ratio_max: 0.90
+  direction_conf_min: 0.18
+  direction_pair_mode_confidence: 0.25
+  
   enable_undistort: true
   undistort_alpha: 0.0
   undistort_border_px: 6
@@ -22,8 +64,17 @@ pipeline:
   use_classic_only: true
 
   stage3_color_weight: 0.35
+  stage3_geom_weight: 1.25
+  stage3_pnp_weight: 1.35
+  stage3_temporal_weight: 0.65
   low_conf_recap_frames: 6
   recover_frames: 8
+  recapture_trigger_scale: 0.70
+  backup_min_score_ratio: 0.95
+  backup_max_age_frames: 6
+  backup_switch_score_margin: 0.08
+  backup_switch_max_dist_px: 180.0
+  backup_switch_cooldown_frames: 3
   control_latency_ms: 29.0
 
   pid_yaw_kp: 1.5
@@ -33,9 +84,32 @@ pipeline:
   pid_pitch_ki: 0.0
   pid_pitch_kd: 0.05
   pid_output_limit: 0.8
+  pid_derivative_tau: 0.012
+  pid_anti_windup_gain: 0.10
+  pid_error_deadband: 0.0025
+  pid_cmd_slew_limit: 6.0
 
   color_min_s: 80.0
   color_min_v: 80.0
+  color_lab_min_l: 35.0
+  color_lab_red_a_min: 145.0
+  color_lab_blue_b_max: 135.0
+  color_sample_min_pixels: 24
+  color_sample_min_ratio: 0.015
+  color_sample_radius_ratio: 0.10
+  color_smooth_window: 7
+  color_smooth_valid_ratio_min: 0.35
+  color_smooth_hysteresis: 0.04
   
   ekf_min_confirm_frames: 3
   ekf_max_speed_mps: 12.0
+  ekf_q_pos: 0.002
+  ekf_q_vel: 0.010
+  ekf_r_pos: 0.004
+  ekf_dt_min_s: 0.001
+  ekf_dt_max_s: 0.060
+  ekf_max_obs_jump_m: 1.20
+  ekf_prob_smooth: 0.85
+  ekf_predict_horizon_scale: 1.00
+  ekf_predict_horizon_min_s: 0.005
+  ekf_predict_horizon_max_s: 0.080

@@ -77,6 +77,12 @@ endif()
 set(LASER_SOURCES
     src/modules/config/parameter_hub.cpp
     src/modules/perception/laser_pipeline.cpp
+    src/modules/perception/laser_pipeline_preprocessor.cpp
+    src/modules/perception/laser_pipeline_detector.cpp
+    src/modules/perception/laser_pipeline_classifier.cpp
+    src/modules/perception/laser_pipeline_selector.cpp
+    src/modules/perception/laser_pipeline_postproc.cpp
+    src/modules/perception/laser_pipeline_debug.cpp
     src/modules/tracking/laser_track_filter.cpp
     src/app/laser_vision_node.cpp
 )

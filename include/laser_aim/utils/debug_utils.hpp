@@ -173,4 +173,13 @@ inline void writeJsonAtomically(const std::string& path, const nlohmann::json& j
     std::rename(tmp_path.c_str(), path.c_str());
 }
 
+inline void appendJsonLine(const std::string& path, const nlohmann::json& j) {
+    std::ofstream ofs(path, std::ios::out | std::ios::app);
+    if (!ofs.is_open()) {
+        return;
+    }
+    ofs << j.dump() << '\n';
+    ofs.close();
+}
+
 } // namespace laser_aim

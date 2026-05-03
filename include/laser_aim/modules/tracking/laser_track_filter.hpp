@@ -17,6 +17,16 @@ namespace laser_aim::modules::tracking {
 
 class LaserTrackFilter {
 public:
+    struct Tuning {
+        double q_pos { 2e-3 };
+        double q_vel { 1e-2 };
+        double r_pos { 4e-3 };
+        double dt_min_s { 1e-3 };
+        double dt_max_s { 6e-2 };
+        double max_obs_jump_m { 1.2 };
+        double prob_smooth { 0.85 };
+    };
+
     struct Observation {
         Eigen::Vector3d pos { Eigen::Vector3d::Zero() };
         double enemy_prob { 0.0 };
@@ -26,6 +36,8 @@ public:
 
     LaserTrackFilter();
 
+    void setTuning(const Tuning& tuning);
+    [[nodiscard]] const Tuning& tuning() const;
     void reset(const Observation& obs);
     void predictTo(std::chrono::steady_clock::time_point now);
     void update(const Observation& obs);
@@ -36,6 +48,8 @@ public:
     [[nodiscard]] double enemyProbAvg() const;
     [[nodiscard]] double laserProbAvg() const;
     [[nodiscard]] int continuousConfirmFrames() const;
+    [[nodiscard]] double lastInnovationNorm() const;
+    [[nodiscard]] bool lastUpdateRejected() const;
 
 private:
     static constexpr int kStateN = 6;  // x y z vx vy vz
@@ -72,9 +86,12 @@ private:
 
     bool valid_ { false };
     std::chrono::steady_clock::time_point last_ts_;
+    Tuning tuning_ {};
     double enemy_prob_avg_ { 0.0 };
     double laser_prob_avg_ { 0.0 };
     int continuous_confirm_frames_ { 0 };
+    double last_innovation_norm_ { 0.0 };
+    bool last_update_rejected_ { false };
 };
 
 } // namespace laser_aim::modules::tracking

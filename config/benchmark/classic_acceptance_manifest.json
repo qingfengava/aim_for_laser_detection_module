@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "mode": "classic_only",
+  "description": "传统方案回归验收集（静态/高速/遮挡/弱发光/红蓝切换）",
+  "scenarios": [
+    {
+      "name": "static",
+      "log_path": "data/benchmark/static/cmd_log.jsonl",
+      "description": "静态目标 + 规则光照"
+    },
+    {
+      "name": "high_speed",
+      "log_path": "data/benchmark/high_speed/cmd_log.jsonl",
+      "description": "高速机动目标"
+    },
+    {
+      "name": "occlusion",
+      "log_path": "data/benchmark/occlusion/cmd_log.jsonl",
+      "description": "短时遮挡与重现"
+    },
+    {
+      "name": "weak_light",
+      "log_path": "data/benchmark/weak_light/cmd_log.jsonl",
+      "description": "弱发光/逆光场景"
+    },
+    {
+      "name": "red_blue_switch",
+      "log_path": "data/benchmark/red_blue_switch/cmd_log.jsonl",
+      "description": "红蓝切换与敌我识别"
+    }
+  ],
+  "acceptance_gates": {
+    "min_frames_total": 300,
+    "min_hit_window_rate": 0.55,
+    "min_predicted_window_ok_rate": 0.65,
+    "max_pnp_error_mean": 5.0,
+    "max_loss_avg_frames": 12.0,
+    "max_relock_avg_frames": 15.0
+  },
+  "regression_tolerance": {
+    "higher_is_better": {
+      "hit_window_rate": 0.03,
+      "predicted_window_ok_rate": 0.03,
+      "fire_enable_rate": 0.03,
+      "valid_rate": 0.02
+    },
+    "lower_is_better": {
+      "pnp_error_mean": 0.35,
+      "loss_avg_frames": 1.5,
+      "relock_avg_frames": 1.5
+    }
+  }
+}
+
